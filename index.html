@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Mom - A Chemical Celebration!</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Cursive Text -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom CSS for animations and specific styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll from confetti */
+            background: linear-gradient(135deg, #2c3e50, #34495e); /* Dark blue-grey lab background */
+            color: #ecf0f1; /* Light text color */
+            position: relative; /* For background animations */
+        }
+
+        /* Subtle background bubbles/glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 30%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.05) 0%, transparent 30%);
+            animation: background-pulse 10s infinite alternate;
+            z-index: -1; /* Behind everything */
+        }
+
+        @keyframes background-pulse {
+            0% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        /* Navbar Cursive Font */
+        .cursive-font {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Atom/Molecule Animation (replaces balloons) */
+        @keyframes ascend {
+            0% { transform: translateY(100vh) translateX(var(--start-x)); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(var(--end-y)) translateX(var(--end-x)); opacity: 0.8; }
+        }
+
+        @keyframes sway {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(var(--sway-offset)); }
+            100% { transform: translateX(0); }
+        }
+
+        .atom {
+            position: fixed;
+            bottom: -50px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: ascend var(--duration) ease-out forwards, sway var(--sway-duration) ease-in-out infinite alternate;
+            box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2), 0 0 10px var(--atom-glow-color);
+            z-index: 10;
+        }
+
+        /* Flask Appearance Animation (replaces jar-appear) */
+        @keyframes flask-appear {
+            0% { transform: translateY(50px) scale(0.8); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .flask-container {
+            animation: flask-appear 1s ease-out forwards;
+            animation-delay: 4s; /* After atoms */
+            opacity: 0;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* Confetti Animation */
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotateZ(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotateZ(720deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--confetti-color);
+            border-radius: 50%;
+            animation: fall 3s ease-out forwards;
+            z-index: 100;
+        }
+
+        /* Sparkle Animation (now more like glowing particles/electrons) */
+        @keyframes sparkle-fade {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #aaffff; /* Lighter, more electric blue */
+            border-radius: 50%;
+            box-shadow: 0 0 8px 3px rgba(170, 255, 255, 0.8); /* Stronger glow */
+            animation: sparkle-fade 1.5s infinite ease-in-out;
+            z-index: 50;
+            pointer-events: none; /* Allow clicks through sparkles */
+        }
+
+
+        /* Hide scrollbar for aesthetic purposes */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Flask Styling */
+        .chemical-flask {
+            position: relative;
+            width: 150px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.1); /* Slightly translucent */
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px 10px 75px 75px / 10px 10px 50px 50px; /* Round bottom */
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1), 0 10px 20px rgba(0,0,0,0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .flask-neck {
+            position: absolute;
+            top: 0;
+            width: 60px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px 10px 0 0;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .flask-stopper {
+            position: absolute;
+            top: -15px;
+            width: 50px;
+            height: 25px;
+            background-color: #8B4513; /* Cork color */
+            border-radius: 12px;
+            box-shadow: inset 0 -5px 5px rgba(0,0,0,0.3), 0 5px 10px rgba(0,0,0,0.2);
+            transition: transform 0.5s ease-out;
+            z-index: 3;
+        }
+
+        .chemical-flask.active .flask-stopper {
+            transform: translateY(-50px) rotateZ(15deg); /* Stopper pops off */
+        }
+
+        .flask-liquid {
+            width: 100%;
+            height: 50%; /* Adjust as needed */
+            background: linear-gradient(to top, #00ff00, #32cd32); /* Glowing green liquid */
+            border-radius: 0 0 75px 75px / 0 0 50px 50px;
+            box-shadow: 0 0 20px 5px rgba(0, 255, 0, 0.7); /* Glow effect */
+            animation: liquid-bubble 2s infinite alternate;
+            transition: background 0.8s ease-in-out, box-shadow 0.8s ease-in-out; /* For color change */
+        }
+
+        @keyframes liquid-bubble {
+            0% { transform: scaleY(1); }
+            100% { transform: scaleY(1.02); }
+        }
+
+        /* Element Note Animation (replaces memory-note) */
+        @keyframes float-up {
+            0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 1; }
+            100% { transform: translateY(-300px) translateX(var(--float-x)) scale(1.2); opacity: 0; }
+        }
+
+        .element-note {
+            position: absolute;
+            background-color: var(--note-color);
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            opacity: 0;
+            animation: float-up var(--note-duration) ease-out forwards;
+            z-index: 1; /* Below stopper, above flask content */
+        }
+
+        /* Glowing Text for Headings */
+        .glowing-text {
+            text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color), 0 0 15px var(--glow-color);
+            animation: text-glow 2s infinite alternate;
+        }
+
+        @keyframes text-glow {
+            0% { text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color); }
+            100% { text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 30px var(--glow-color); }
+        }
+
+        /* Carousel Lab Frame */
+        .carousel-frame {
+            border: 5px solid #00ffff; /* Cyan border */
+            box-shadow: 0 0 20px 5px rgba(0, 255, 255, 0.5); /* Cyan glow */
+            border-radius: 20px;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.3); /* Dark translucent background */
+        }
+
+        /* Button Hover Effect */
+        button {
+            transition: all 0.3s ease-in-out;
+        }
+        button:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Periodic Table Element Styling */
+        .periodic-element {
+            width: 150px;
+            height: 150px;
+            background-color: #34495e; /* Dark background for element */
+            border: 2px solid #00ffff; /* Cyan border */
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            box-shadow: 0 0 15px 5px rgba(0, 255, 255, 0.6); /* Strong cyan glow */
+            animation: element-pop-in 0.8s ease-out forwards;
+            opacity: 0;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        @keyframes element-pop-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .element-atomic-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ecf0f1;
+            align-self: flex-start;
+        }
+
+        .element-symbol {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #00ffff; /* Cyan for symbol */
+            line-height: 1;
+        }
+
+        .element-name {
+            font-size: 1rem;
+            color: #ecf0f1;
+            margin-top: -5px;
+        }
+
+        .element-quality {
+            font-size: 0.9rem;
+            color: #2ecc71; /* Green for quality */
+            font-style: italic;
+            margin-top: 8px; /* Added space here */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 639px) { /* Tailwind's 'sm' breakpoint is 640px */
+            .navbar h1 {
+                font-size: 2.5rem; /* Smaller font for navbar title on small screens */
+            }
+
+            .flask-container p {
+                font-size: 1.25rem; /* Adjust flask text size */
+            }
+
+            .carousel-frame .h-96 {
+                height: 16rem; /* Shorter carousel height on mobile */
+            }
+
+            .periodic-element {
+                width: 120px; /* Smaller element size */
+                height: 120px;
+                padding: 8px;
+            }
+            .element-atomic-number {
+                font-size: 0.9rem;
+            }
+            .element-symbol {
+                font-size: 2.8rem;
+            }
+            .element-name {
+                font-size: 0.8rem;
+            }
+            .element-quality {
+                font-size: 0.7rem;
+                margin-top: 4px; /* Adjusted space for mobile */
+            }
+
+            /* Adjust general text sizes for smaller screens */
+            .text-lg {
+                font-size: 1rem;
+            }
+            .text-xl {
+                font-size: 1.125rem;
+            }
+            .text-2xl {
+                font-size: 1.5rem;
+            }
+            .text-3xl {
+                font-size: 1.875rem;
+            }
+            .text-4xl {
+                font-size: 2.25rem;
+            }
+            .text-5xl {
+                font-size: 2.5rem;
+            }
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between text-gray-800">
+
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop>
+        <source src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Music Controls -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="musicToggle" class="bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-full shadow-lg transition-all duration-300">
+            <i class="fas fa-volume-up" id="musicIcon"></i>
+        </button>
+    </div>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="w-full bg-gradient-to-r from-teal-500 to-blue-600 shadow-xl p-4 rounded-b-xl fixed top-0 z-40 cursor-pointer">
+        <div class="container mx-auto flex justify-center items-center">
+            <h1 class="text-white text-4xl sm:text-5xl md:text-6xl cursive-font tracking-wide glowing-text" style="--glow-color: #00ffff;">
+                Happy Birthday Mom!
+            </h1>
+        </div>
+    </nav>
+
+    <!-- Atoms/Molecules Container (will be dynamically added) -->
+    <div id="atom-container"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex flex-col items-center justify-center flex-grow p-4 mt-24 w-full max-w-4xl mx-auto">
+
+        <!-- Chemical Flask Section -->
+        <div id="flask-section" class="flask-container relative flex flex-col items-center justify-center p-6 bg-gray-800 rounded-3xl shadow-2xl transform scale-95 hover:scale-100 transition-transform duration-300 cursor-pointer" onclick="activateFlask()">
+            <div id="mainChemicalFlask" class="chemical-flask">
+                <div class="flask-neck"></div>
+                <div class="flask-stopper"></div>
+                <div class="flask-liquid"></div>
+                <!-- Element notes will be dynamically added here -->
+            </div>
+            <p class="mt-8 text-xl sm:text-2xl font-semibold text-teal-400 glowing-text" style="--glow-color: #00ffcc;">Click the flask to release the elements of joy!</p>
+        </div>
+
+        <!-- Image Carousel -->
+        <section class="w-full mt-16 bg-gray-800 p-6 rounded-3xl shadow-2xl flex flex-col items-center border-2 border-teal-500 carousel-frame">
+            <h2 class="text-3xl sm:text-4xl font-bold text-blue-400 mb-6 text-center glowing-text" style="--glow-color: #8a2be2;">Cherished Reactions</h2>
+            <div class="relative w-full max-w-2xl h-64 sm:h-96 overflow-hidden rounded-2xl shadow-xl border-2 border-purple-500">
+                <img id="carousel-image" src="" alt="Moments" class="w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0">
+                <div class="absolute inset-0 flex items-center justify-between p-4">
+                    <button id="prev-btn" class="bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-all duration-300 focus:outline-none">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="next-btn" class="bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-all duration-300 focus:outline-none">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div id="carousel-dots" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2"></div>
+            </div>
+        </section>
+
+        <!-- Thanks Message -->
+        <section class="w-full mt-16 bg-gray-800 p-8 rounded-3xl shadow-2xl text-center border-2 border-blue-500">
+            <h2 class="text-3xl sm:text-4xl font-bold text-teal-400 mb-6 glowing-text" style="--glow-color: #00e6e6;">A Special Formula of Thanks, Mom!</h2>
+            <p class="text-base sm:text-lg md:text-xl leading-relaxed text-gray-300 mb-8">
+                Dearest Mom, thank you for being the incredible woman you are. Your unwavering love, endless support, and tireless dedication inspire me every single day. Even when you're short on time, your unwavering support and love shine through, always ensuring everything is taken care of. You truly are the best!
+            </p>
+            <button id="specialMessageBtn" class="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-lg sm:text-xl font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                Unveil a Chemical Surprise!
+            </button>
+        </section>
+
+        <!-- Virtual Gift Modal -->
+        <div id="giftModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+            <div class="bg-gray-800 p-6 sm:p-8 rounded-3xl shadow-2xl max-w-xs sm:max-w-md w-full text-center relative border-2 border-teal-500">
+                <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-100 text-xl sm:text-2xl" onclick="closeGiftModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="text-2xl sm:text-3xl font-bold text-blue-400 mb-4 glowing-text" style="--glow-color: #00ccff;">Your Special Element!</h3>
+                <div id="specialElementDisplay" class="flex justify-center items-center h-40 sm:h-48">
+                    <!-- The special element will be displayed here -->
+                </div>
+                <p class="text-sm sm:text-lg text-gray-300 mb-6 mt-4">
+                    Here's a virtual hug, a stable bond of love, and a promise for a day dedicated entirely to you, filled with positive reactions!
+                </p>
+                <button class="bg-teal-500 hover:bg-teal-600 text-base sm:text-lg font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-full" onclick="closeGiftModal()">
+                    Synthesize Happiness!
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- Global Variables ---
+        const carouselImages = [
+            "https://placehold.co/600x400/FFD1DC/000000?text=Moments+1",
+            "https://placehold.co/600x400/ADD8E6/000000?text=Moments+2",
+            "https://placehold.co/600x400/90EE90/000000?text=Moments+3",
+            "https://placehold.co/600x400/FFC0CB/000000?text=Moments+4",
+            "https://placehold.co/600x400/DDA0DD/000000?text=Moments+5"
+        ];
+        let currentImageIndex = 0;
+        let carouselInterval;
+        const carouselImageElement = document.getElementById('carousel-image');
+        const carouselDotsContainer = document.getElementById('carousel-dots');
+        const musicToggleBtn = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const navbar = document.getElementById('navbar');
+        const mainChemicalFlask = document.getElementById('mainChemicalFlask');
+        const flaskLiquid = document.querySelector('.flask-liquid');
+        const specialElementDisplay = document.getElementById('specialElementDisplay');
+
+
+        // Define chemistry-themed "elements" to be released from the flask
+        const elements = [
+            { text: "Catalyst", color: "#E74C3C" },    // Red
+            { text: "Solution", color: "#3498DB" },    // Blue
+            { text: "Bonding", color: "#2ECC71" },     // Green
+            { text: "Equilibrium", color: "#F1C40F" }, // Yellow
+            { text: "Proton", color: "#9B59B6" },      // Amethyst
+            { text: "Electron", color: "#1ABC9C" },    // Turquoise
+            { text: "Reaction", color: "#E67E22" },    // Carrot
+            { text: "Synthesis", color: "#C0392B" },   // Dark Red
+            { text: "Discovery", color: "#2980B9" },   // Dark Blue
+            { text: "Innovation", color: "#27AE60" }   // Dark Green
+        ];
+
+        // Special elements for the modal
+        const specialElements = [
+            { atomicNumber: 79, symbol: "Au", name: "Gold", quality: "Precious & Invaluable" },
+            { atomicNumber: 8, symbol: "O", name: "Oxygen", quality: "Essential for Life" },
+            { atomicNumber: 6, symbol: "C", name: "Carbon", quality: "Foundation of Everything" },
+            { atomicNumber: 1, symbol: "H", name: "Hydrogen", quality: "Fundamental & Energetic" },
+            { atomicNumber: 16, symbol: "S", name: "Sulfur", quality: "Strong & Resilient" },
+            { atomicNumber: 10, symbol: "Ne", name: "Neon", quality: "Bright & Illuminating" },
+            { atomicNumber: 17, symbol: "Cl", name: "Chlorine", quality: "Purifying & Clean" },
+            { atomicNumber: 15, symbol: "P", name: "Phosphorus", quality: "Spark of Brilliance" }
+        ];
+
+        // Atom colors for the floating elements
+        const atomColors = ['#ecf0f1', '#bdc3c7', '#95a5a6', '#7f8c8d']; // Silver, light grey, dark grey
+
+        // --- Utility Functions ---
+
+        /**
+         * Creates and animates confetti particles.
+         * @param {number} count - The number of confetti particles to create.
+         * @param {Event} [event] - The event object to get coordinates for localized confetti.
+         */
+        function createConfetti(count, event = null) {
+            // Chemistry-themed confetti colors
+            const colors = ['#3498DB', '#2ECC71', '#9B59B6', '#F1C40F', '#E74C3C', '#1ABC9C', '#E67E22', '#C0392B'];
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.setProperty('--confetti-color', colors[Math.floor(Math.random() * colors.length)]);
+
+                if (event) {
+                    confetti.style.left = `${event.clientX + (Math.random() * 100 - 50)}px`;
+                    confetti.style.top = `${event.clientY + (Math.random() * 100 - 50)}px`;
+                } else {
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.top = `${Math.random() * -100}px`; // Start above viewport
+                }
+
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`; // Stagger animation
+                confetti.style.animationDuration = `${2 + Math.random() * 1}s`; // Vary duration
+                document.body.appendChild(confetti);
+
+                // Remove confetti after animation to prevent DOM clutter
+                confetti.addEventListener('animationend', () => {
+                    confetti.remove();
+                });
+            }
+        }
+
+        /**
+         * Creates and animates sparkle particles (now more like glowing electrons).
+         */
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparkle.style.left = `${Math.random() * 100}vw`;
+            sparkle.style.top = `${Math.random() * 100}vh`;
+            sparkle.style.animationDelay = `${Math.random() * 2}s`; // Stagger animation
+            document.body.appendChild(sparkle);
+
+            // Remove sparkle after animation to prevent DOM clutter
+            setTimeout(() => {
+                sparkle.remove();
+            }, 3000); // Sparkle animation duration + some buffer
+        }
+
+        // --- Initial Page Animations ---
+
+        /**
+         * Creates and animates atoms/molecules (replaces balloons).
+         */
+        function animateAtoms() {
+            const atomContainer = document.getElementById('atom-container');
+            for (let i = 0; i < 15; i++) {
+                const atom = document.createElement('div');
+                atom.classList.add('atom');
+                const color = atomColors[i % atomColors.length];
+                atom.style.backgroundColor = color;
+                atom.style.setProperty('--atom-glow-color', color); /* For glow effect */
+                atom.style.setProperty('--start-x', `${Math.random() * 100}vw`);
+                atom.style.setProperty('--end-x', `${Math.random() * 100}vw`);
+                atom.style.setProperty('--end-y', `${Math.random() * -200 - 50}px`); // End above screen
+                atom.style.setProperty('--sway-offset', `${Math.random() * 40 - 20}px`); // Random sway amount
+                atom.style.setProperty('--duration', `${6 + Math.random() * 4}s`); // Vary duration
+                atom.style.setProperty('--sway-duration', `${2 + Math.random() * 2}s`); // Vary sway duration
+                atom.style.animationDelay = `${i * 0.3}s`; // Stagger animation
+                atomContainer.appendChild(atom);
+
+                // Remove atom after animation to prevent DOM clutter
+                atom.addEventListener('animationend', () => {
+                    atom.remove();
+                });
+            }
+        }
+
+        /**
+         * Activates the chemical flask and releases element notes.
+         */
+        function activateFlask() {
+            if (mainChemicalFlask.classList.contains('active')) {
+                // If already active, do nothing or reset
+                return;
+            }
+
+            mainChemicalFlask.classList.add('active');
+            createConfetti(20); // Small confetti burst when flask activates
+
+            // Change liquid color and glow
+            flaskLiquid.style.background = `linear-gradient(to top, #ff00ff, #cc00cc)`; /* Magenta liquid */
+            flaskLiquid.style.boxShadow = `0 0 25px 8px rgba(255, 0, 255, 0.8)`;
+
+            let delay = 0;
+            elements.forEach((element, index) => {
+                setTimeout(() => {
+                    const note = document.createElement('div');
+                    note.classList.add('element-note');
+                    note.textContent = element.text;
+                    note.style.setProperty('--note-color', element.color);
+                    note.style.left = `${50 + (Math.random() * 60 - 30)}%`; // Random horizontal position near center
+                    note.style.bottom = `${20 + (Math.random() * 50)}px`; // Start from within the flask
+                    note.style.setProperty('--float-x', `${Math.random() * 200 - 100}px`); // Random horizontal float
+                    note.style.setProperty('--note-duration', `${3 + Math.random() * 1}s`); // Vary duration
+
+                    mainChemicalFlask.appendChild(note);
+
+                    // Remove note after animation
+                    note.addEventListener('animationend', () => {
+                        note.remove();
+                    });
+                }, delay);
+                delay += 300; // Stagger notes release
+            });
+        }
+
+        // --- Image Carousel Functions ---
+
+        /**
+         * Updates the carousel image and active dot.
+         */
+        function updateCarousel() {
+            carouselImageElement.style.opacity = '0'; // Fade out current image
+            setTimeout(() => {
+                carouselImageElement.src = carouselImages[currentImageIndex];
+                carouselImageElement.style.opacity = '1'; // Fade in new image
+                updateDots();
+            }, 500); // Half of the transition duration
+        }
+
+        /**
+         * Moves the carousel to the next image.
+         */
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
+            updateCarousel();
+        }
+
+        /**
+         * Moves the carousel to the previous image.
+         */
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + carouselImages.length) % carouselImages.length;
+            updateCarousel();
+        }
+
+        /**
+         * Starts the automatic carousel slideshow.
+         */
+        function startCarousel() {
+            clearInterval(carouselInterval); // Clear any existing interval
+            carouselInterval = setInterval(nextImage, 2500); // Slide every 2.5 seconds
+        }
+
+        /**
+         * Creates and updates carousel navigation dots.
+         */
+        function setupDots() {
+            carouselDotsContainer.innerHTML = ''; // Clear existing dots
+            carouselImages.forEach((_, index) => {
+                const dot = document.createElement('span');
+                dot.classList.add('w-3', 'h-3', 'bg-gray-400', 'rounded-full', 'cursor-pointer', 'transition-colors', 'duration-300');
+                dot.addEventListener('click', () => {
+                    currentImageIndex = index;
+                    updateCarousel();
+                    startCarousel(); // Restart interval on manual navigation
+                });
+                carouselDotsContainer.appendChild(dot);
+            });
+            updateDots();
+        }
+
+        /**
+         * Highlights the active dot.
+         */
+        function updateDots() {
+            const dots = carouselDotsContainer.querySelectorAll('span');
+            dots.forEach((dot, index) => {
+                if (index === currentImageIndex) {
+                    dot.classList.add('bg-purple-500'); /* Changed to purple for chemistry theme */
+                    dot.classList.remove('bg-gray-400');
+                } else {
+                    dot.classList.remove('bg-purple-500');
+                    dot.classList.add('bg-gray-400');
+                }
+            });
+        }
+
+        // --- Music Control ---
+
+        /**
+         * Toggles background music play/pause.
+         */
+        function toggleMusic() {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play().catch(e => console.error("Music play failed:", e));
+                musicIcon.classList.remove('fa-volume-mute');
+                musicIcon.classList.add('fa-volume-up');
+            } else {
+                backgroundMusic.pause();
+                musicIcon.classList.remove('fa-volume-up');
+                musicIcon.classList.add('fa-volume-mute');
+            }
+        }
+
+        // --- Virtual Gift Modal Functions ---
+
+        /**
+         * Displays a random special element in the gift modal.
+         */
+        function displaySpecialElement() {
+            // Clear previous content
+            specialElementDisplay.innerHTML = '';
+
+            // Choose a random special element
+            const randomIndex = Math.floor(Math.random() * specialElements.length);
+            const chosenElement = specialElements[randomIndex];
+
+            // Create the periodic table element structure
+            const elementDiv = document.createElement('div');
+            elementDiv.classList.add('periodic-element');
+
+            const atomicNumberDiv = document.createElement('div');
+            atomicNumberDiv.classList.add('element-atomic-number');
+            atomicNumberDiv.textContent = chosenElement.atomicNumber;
+
+            const symbolDiv = document.createElement('div');
+            symbolDiv.classList.add('element-symbol');
+            symbolDiv.textContent = chosenElement.symbol;
+
+            const nameDiv = document.createElement('div');
+            nameDiv.classList.add('element-name');
+            nameDiv.textContent = chosenElement.name;
+
+            const qualityDiv = document.createElement('div');
+            qualityDiv.classList.add('element-quality');
+            qualityDiv.textContent = chosenElement.quality;
+
+            elementDiv.appendChild(atomicNumberDiv);
+            elementDiv.appendChild(symbolDiv);
+            elementDiv.appendChild(nameDiv);
+            elementDiv.appendChild(qualityDiv);
+
+            specialElementDisplay.appendChild(elementDiv);
+        }
+
+        /**
+         * Opens the virtual gift modal.
+         */
+        function openGiftModal() {
+            document.getElementById('giftModal').classList.remove('hidden');
+            displaySpecialElement(); // Display the special element when modal opens
+            createConfetti(50); // Big confetti burst for the gift!
+        }
+
+        /**
+         * Closes the virtual gift modal.
+         */
+        function closeGiftModal() {
+            document.getElementById('giftModal').classList.add('hidden');
+        }
+
+        // --- Event Listeners and Initial Setup ---
+
+        window.onload = function() {
+            // Start page entrance animations
+            animateAtoms();
+
+            // Set up carousel
+            updateCarousel();
+            setupDots();
+            startCarousel();
+
+            // Event listeners for carousel buttons
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                prevImage();
+                startCarousel(); // Restart interval on manual navigation
+            });
+            document.getElementById('next-btn').addEventListener('click', () => {
+                nextImage();
+                startCarousel(); // Restart interval on manual navigation
+            });
+
+            // Event listener for music toggle button
+            musicToggleBtn.addEventListener('click', toggleMusic);
+
+            // Event listener for special message button
+            document.getElementById('specialMessageBtn').addEventListener('click', openGiftModal);
+
+            // Event listener for navbar click to trigger confetti
+            navbar.addEventListener('click', (e) => createConfetti(30, e));
+
+            // Create continuous sparkles
+            setInterval(createSparkle, 500); // Create a new sparkle every 0.5 seconds
+
+            // Play music automatically (if allowed by browser, otherwise user can click toggle)
+            backgroundMusic.play().catch(e => console.log("Autoplay blocked, user can click music icon."));
+        };
+    </script>
+</body>
+</html>
